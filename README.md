@@ -1,4 +1,4 @@
-# Ansible MariaDB
+# Ansible Role MariaDB
 [![CI](https://github.com/supertarto/ansible-mariadb/actions/workflows/ci.yml/badge.svg)](https://github.com/supertarto/ansible-mariadb/actions/workflows/ci.yml)
 
 Install and configure MariaDB with Ansible

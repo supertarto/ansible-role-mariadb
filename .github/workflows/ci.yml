@@ -24,9 +24,9 @@ jobs:
           path: 'supertarto.mariadb'
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.13'
 
       - name: Install test dependencies.
         run: pip3 install yamllint
@@ -41,9 +41,8 @@ jobs:
     strategy:
       matrix:
         distrib:
-          - debian10
-          - debian11
           - debian12
+          - debian13
 
     steps:
       - name: Check out the codebase.
@@ -52,9 +51,9 @@ jobs:
           path: 'supertarto.mariadb'
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.13'
 
       - name: Install test dependencies.
         run: pip3 install ansible molecule-plugins[docker] docker

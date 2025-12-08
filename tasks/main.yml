@@ -1,14 +1,14 @@
 ---
 - name: Include OS specific variables
-  include_vars: "{{ ansible_os_family }}.yml"
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
 
 - name: Define mariadb_packages
-  set_fact:
+  ansible.builtin.set_fact:
     mariadb_packages: "{{ __mariadb_packages | list }}"
   when: mariadb_packages is not defined
 
 - name: Define mariadb_python_package
-  set_fact:
+  ansible.builtin.set_fact:
     mariadb_python_package: "{{ __mariadb_python_package | list }}"
   when: mariadb_python_package is not defined
 
@@ -37,20 +37,26 @@
     mariadb_pid_file: "{{ __mariadb_pid_file }}"
   when: mariadb_pid_file is not defined
 
-- include_tasks: "setup-{{ ansible_os_family }}.yml"
+- name: Specific OS Installation procedure
+  ansible.builtin.include_tasks: "setup-{{ ansible_os_family }}.yml"
 
 - name: Check if MySQL packages were installed.
   ansible.builtin.set_fact:
     mariadb_installed_packages: "{{ mariadb_deb_packages_is_installed is defined and mariadb_deb_packages_is_installed.changed }}"
 
-- include_tasks: configure.yml
+- name: Include configuration tasks
+  ansible.builtin.include_tasks: configure.yml
 
-- include_tasks: secure-installation.yml
+- name: Include Secure Installation
+  ansible.builtin.include_tasks: secure-installation.yml
   no_log: true
 
-- include_tasks: databases.yml
+- name: Database creation
+  ansible.builtin.include_tasks: databases.yml
 
-- include_tasks: users.yml
+- name: Users creations and rights
+  ansible.builtin.include_tasks: users.yml
 
-- include_tasks: dump.yml
+- name: Local dump script
+  ansible.builtin.include_tasks: dump.yml
   when: mariadb_use_dump_script
