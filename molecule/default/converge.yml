@@ -3,12 +3,12 @@
   hosts: all
 
   roles:
-    - role: supertarto.mariadb
+    - role: .
 
   pre_tasks:
 
     - name: Install python3-apt
-      package:
+      ansible.builtin.package:
         name: "python3-apt"
         state: present
 

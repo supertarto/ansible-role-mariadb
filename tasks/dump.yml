@@ -15,6 +15,16 @@
     group: root
     mode: "0750"
 
+- name: Create .my.cnf for dump user (if credentials provided)
+  ansible.builtin.template:
+    src: my-dump.cnf.j2
+    dest: "{{ mariadb_root_home }}/.my-dump.cnf"
+    owner: root
+    group: root
+    mode: "0600"
+  when: mariadb_dump_user and mariadb_dump_pass
+  no_log: true
+
 - name: Copy MariaDB dump script
   ansible.builtin.template:
     src: mariadb_dump_script.sh.j2
@@ -25,9 +35,11 @@
 
 - name: Create a cron task for MariaDB dump script
   ansible.builtin.cron:
-    name: dump mariadb
-    minute: "22"
-    hour: "12"
+    name: "dump mariadb - {{ item.name }}"
+    minute: "{{ mariadb_dump_cron_minute | default('22') }}"
+    hour: "{{ mariadb_dump_cron_hour | default('12') }}"
     user: root
-    job: "{{ mariadb_dump_path_script }}/mariadb_dump_script.sh {{ item.name }}"
-  with_items: "{{ mariadb_databases }}"
+    job: "{{ mariadb_dump_path_script }}/mariadb_dump_script.sh {{ item.name }} >> {{ mariadb_log_path }}/dump_{{ item.name }}.log 2>&1"
+    state: present
+  loop: "{{ mariadb_databases }}"
+  when: mariadb_databases

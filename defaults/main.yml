@@ -1,15 +1,35 @@
 ---
-mariadb_use_dump_script: true
-mariadb_overwrite_global_mycnf: true
-mariadb_root_password_update: false
+mariadb_daemon: mariadb
+
+mariadb_packages:
+    - mariadb-server
+
+mariadb_python_package:
+    - python3-mariadb-connector
+    - python3-pymysql
+
+
+mariadb_port: "3306"
+mariadb_bind_address: '127.0.0.1'
+
+mariadb_log: "{{ mariadb_log_path }}/mariadb.log"
+mariadb_log_error: "{{ mariadb_log_path }}/mariadb.err"
+
+mariadb_character_set_server: "utf8"
+mariadb_collation_server: "utf8_general_ci"
+mariadb_config_file: /etc/my.cnf
+mariadb_config_include_dir: /etc/mysql/conf.d
+mariadb_socket: /run/mysqld/mysqld.sock
+mariadb_pid_file: /run/mysqld/mysqld.pid
 
 mariadb_dump_path: "/var/local/dump_sql"
-mariadb_log_path: "/var/log/mariadb"
 mariadb_dump_path_script: "/var/local/scripts"
+
+mariadb_log_path: "/var/log/mariadb"
 mariadb_datadir: /var/lib/mysql
 mariadb_root_home: "/root"
 mariadb_root_username: "root"
-mariadb_root_password: "defaultpass"
+mariadb_root_password: "CHANGE_IT_NOW"
 mariadb_databases: []
 # Exemple:
 # - name: database1
@@ -23,16 +43,11 @@ mariadb_users: []
 # password: sqlpassword
 # priv: "*.*:SELECT,UPDATE"
 
-mariadb_dump_user: []
-mariadb_dump_pass: []
-
-mariadb_port: "3306"
-
-mariadb_bind_address: '127.0.0.1'
-
-
-mariadb_log: "{{ mariadb_log_path }}/mariadb.log"
-mariadb_log_error: "{{ mariadb_log_path }}/mariadb.err"
-
-mariadb_character_set_server: "utf8"
-mariadb_collation_server: "utf8_general_ci"
+##########
+# Dump
+##########
+mariadb_use_dump_script: true
+mariadb_dump_cron_hour: "12"
+mariadb_dump_cron_minute: "22"
+mariadb_dump_user: ""
+mariadb_dump_pass: ""

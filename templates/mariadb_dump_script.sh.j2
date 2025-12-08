@@ -1,28 +1,60 @@
 #!/bin/bash
+set -euo pipefail
 
-
-if [ -z $1 ]
-then
-    echo "Usage : $0 databasename"
+if [ -z "${1:-}" ]; then
+    echo "Usage: $0 database_name" >&2
     exit 1
 fi
+
 # Variables
-{% if mariadb_dump_user %}
-MYSQL_USER="{{ mariadb_dump_user }}"
-MYSQL_PASSWD="{{ mariadb_dump_pass }}"
-{% endif %}
+DATABASE="$1"
 DATE=`date +%y_%m_%d`
-BACKUP=$1_$DATE
+BACKUP="${DATABASE}_${DATE}"
 BACKUP_DIR="{{ mariadb_dump_path }}"
+LOG_FILE="{{ mariadb_log_path }}/dump_${DATABASE}.log"
+
+DEFAULTS_FILE="{{ mariadb_root_home }}/.my-dump.cnf"
+MYSQLDUMP_CMD="mysqldump --defaults-file=${DEFAULTS_FILE}"
+
+
+if [ ! -d "${BACKUP_DIR}" ]; then
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: Backup directory ${BACKUP_DIR} does not exist" >&2
+    exit 1
+fi
+
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting backup of database: ${DATABASE}"
 
 # Dump
-{% if mariadb_dump_user %}
-mysqldump --user $MYSQL_USER --password=$MYSQL_PASSWD --result-file=$BACKUP_DIR/$BACKUP.sql $1
-{% else %}
-mysqldump --result-file=$BACKUP_DIR/$BACKUP.sql $1
-{% endif %}
-gzip -f $BACKUP_DIR/$BACKUP.sql
-chmod 640 $BACKUP_DIR/$BACKUP.sql.gz
 
-
-find $BACKUP_DIR -maxdepth 1 -type f -mtime +30 -name "*.gz" -delete
+if ${MYSQLDUMP_CMD} \
+    --single-transaction \
+    --quick \
+    --lock-tables=false \
+    --result-file="${BACKUP_DIR}/${BACKUP}.sql" \
+    "${DATABASE}"; then
+    
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Dump successful: ${BACKUP}.sql"
+    
+    # Compression
+    if gzip -f "${BACKUP_DIR}/${BACKUP}.sql"; then
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Compression successful: ${BACKUP}.sql.gz"
+        
+        # change rights
+        chmod 640 "${BACKUP_DIR}/${BACKUP}.sql.gz"
+        
+        # Delete old dump (> 30 jours)
+        DELETED=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -mtime +30 -name "${DATABASE}_*.sql.gz" -delete -print | wc -l)
+        if [ "${DELETED}" -gt 0 ]; then
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Cleaned up ${DELETED} old backup(s)"
+        fi
+        
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Backup completed successfully"
+        exit 0
+    else
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: Compression failed" >&2
+        exit 1
+    fi
+else
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: Dump failed for database ${DATABASE}" >&2
+    exit 1
+fi

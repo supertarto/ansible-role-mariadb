@@ -1,44 +1,6 @@
 ---
-- name: Include OS specific variables
-  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
-
-- name: Define mariadb_packages
-  ansible.builtin.set_fact:
-    mariadb_packages: "{{ __mariadb_packages | list }}"
-  when: mariadb_packages is not defined
-
-- name: Define mariadb_python_package
-  ansible.builtin.set_fact:
-    mariadb_python_package: "{{ __mariadb_python_package | list }}"
-  when: mariadb_python_package is not defined
-
-- name: Define mariadb_daemon
-  ansible.builtin.set_fact:
-    mariadb_daemon: "{{ __mariadb_daemon }}"
-  when: mariadb_daemon is not defined
-
-- name: Define mariadb_config_file
-  ansible.builtin.set_fact:
-    mariadb_config_file: "{{ __mariadb_config_file }}"
-  when: mariadb_config_file is not defined
-
-- name: Define mariadb_config_include_dir
-  ansible.builtin.set_fact:
-    mariadb_config_include_dir: "{{ __mariadb_config_include_dir }}"
-  when: mariadb_config_include_dir is not defined
-
-- name: Define mariadb_socket
-  ansible.builtin.set_fact:
-    mariadb_socket: "{{ __mariadb_socket }}"
-  when: mariadb_socket is not defined
-
-- name: Define mariadb_pid_file
-  ansible.builtin.set_fact:
-    mariadb_pid_file: "{{ __mariadb_pid_file }}"
-  when: mariadb_pid_file is not defined
-
-- name: Specific OS Installation procedure
-  ansible.builtin.include_tasks: "setup-{{ ansible_os_family }}.yml"
+- name: Include Setup tasks
+  ansible.builtin.include_tasks: "setup.yml"
 
 - name: Check if MySQL packages were installed.
   ansible.builtin.set_fact:

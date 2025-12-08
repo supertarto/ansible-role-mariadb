@@ -1,0 +1,11 @@
+[client]
+user={{ mariadb_dump_user }}
+password={{ mariadb_dump_pass }}
+socket={{ mariadb_socket }}
+
+[mysqldump]
+quick
+quote-names
+max_allowed_packet=16M
+single-transaction
+lock-tables=false

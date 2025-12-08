@@ -1,16 +1,25 @@
 ---
+- name: Create logs directory for MariaDB
+  ansible.builtin.file:
+    path: "{{ mariadb_log_path }}"
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: "0750"
+
 - name: Copy my.cnf global file
   ansible.builtin.template:
     src: my.cnf.j2
     dest: "{{ mariadb_config_file }}"
     owner: root
     group: root
-    mode: 0644
-    force: "{{ mariadb_overwrite_global_mycnf }}"
+    mode: "0644"
   notify: Restart MariaDB
 
-- name: Create logs directory for MariaDB
+- name: Ensure config include directory exists
   ansible.builtin.file:
-    path: "{{ mariadb_log_path }}"
+    path: "{{ mariadb_config_include_dir }}"
     state: directory
-    mode: 0750
+    owner: root
+    group: root
+    mode: "0755"

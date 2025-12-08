@@ -1,8 +1,12 @@
 ---
 - name: Create databases
-  ansible.builtin.mysql_db:
+  community.mysql.mysql_db:
     name: "{{ item.name }}"
     collation: "{{ item.collation | default('utf8_general_ci') }}"
     encoding: "{{ item.encoding | default('utf8') }}"
     state: present
-  with_items: "{{ mariadb_databases }}"
+    login_unix_socket: "{{ mariadb_socket }}"
+  loop: "{{ mariadb_databases }}"
+  when: mariadb_databases
+  loop_control:
+    label: "{{ item.name }}"
