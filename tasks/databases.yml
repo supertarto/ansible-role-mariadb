@@ -7,6 +7,5 @@
     state: present
     login_unix_socket: "{{ mariadb_socket }}"
   loop: "{{ mariadb_databases }}"
-  when: mariadb_databases
   loop_control:
     label: "{{ item.name }}"

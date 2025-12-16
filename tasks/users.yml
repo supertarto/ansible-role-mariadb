@@ -8,5 +8,4 @@
     state: present
     login_unix_socket: "{{ mariadb_socket }}"
   loop: "{{ mariadb_users }}"
-  when: mariadb_users
   no_log: true
