@@ -1,0 +1,4 @@
+---
+__mariadb_python_package:
+    - python3-pymysql
+

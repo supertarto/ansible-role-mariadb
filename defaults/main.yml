@@ -4,11 +4,6 @@ mariadb_daemon: mariadb
 mariadb_packages:
     - mariadb-server
 
-mariadb_python_package:
-    - python3-mariadb-connector
-    - python3-pymysql
-
-
 mariadb_port: "3306"
 mariadb_bind_address: '127.0.0.1'
 
