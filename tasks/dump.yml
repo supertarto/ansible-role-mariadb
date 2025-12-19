@@ -22,7 +22,6 @@
     owner: root
     group: root
     mode: "0600"
-  when: mariadb_dump_user and mariadb_dump_pass
   no_log: true
 
 - name: Copy MariaDB dump script
