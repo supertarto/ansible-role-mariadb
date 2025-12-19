@@ -42,4 +42,3 @@
     job: "{{ mariadb_dump_path_script }}/mariadb_dump_script.sh {{ item.name }} >> {{ mariadb_log_path }}/dump_{{ item.name }}.log 2>&1"
     state: present
   loop: "{{ mariadb_databases }}"
-  when: mariadb_databases
